@@ -17,6 +17,7 @@ export async function POST(req) {
       exper: undefined,
       project: undefined,
       socialMedia: undefined,
+      certificate: undefined,
     },
   });
   console.log(body.data);
