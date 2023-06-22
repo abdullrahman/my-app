@@ -39,6 +39,7 @@ model Info {
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   onDelete    Boolean            @default(false)
+  Certificate Certificate[]
 }
 
 enum CertificateType {
@@ -58,6 +59,8 @@ model Certificate {
   certiFromDate   DateTime
   certiToDate     DateTime
   certiTotalHours String
+  InfoId          Int
+  info            Info            @relation(fields: [InfoId], references: [id])
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   onDelete        Boolean         @default(false)
