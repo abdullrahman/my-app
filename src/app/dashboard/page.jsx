@@ -1,6 +1,6 @@
 import React from "react";
 import { PrismaClient } from "@prisma/client";
-import Form from "@/Components/Form";
+
 export default async function About() {
   const prisma = new PrismaClient();
   const getUsers = async () => {
@@ -8,5 +8,14 @@ export default async function About() {
     return users;
   };
   const users = await getUsers();
-  return <div>Dashboard</div>;
+  const columns = Object.keys(users[0]);
+  return (
+    <>
+      <div>
+        {columns.map((c) => (
+          <p>{c}</p>
+        ))}
+      </div>
+    </>
+  );
 }

@@ -1,9 +1,10 @@
+"use client";
 import React from "react";
-import Form from "@/Components/Form";
+import InfoForm from "../components/infoForm";
 export default function NewInfo() {
   return (
     <div>
-      <Form />
+      <InfoForm />
     </div>
   );
 }
