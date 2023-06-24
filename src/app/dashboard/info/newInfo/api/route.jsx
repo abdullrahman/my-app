@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req) {
   const body = await req.json();
-  const newInfo = await prisma.Info.create({
+  const newInfo = await prisma.info.create({
     data: {
       name: body.data.name,
       email: body.data.email,
@@ -17,7 +17,6 @@ export async function POST(req) {
       exper: undefined,
       project: undefined,
       socialMedia: undefined,
-      certificate: undefined,
     },
   });
   console.log(body.data);

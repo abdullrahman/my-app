@@ -1,8 +1,12 @@
 export function getColumns(data) {
-  const extractColumns = Object.keys(data[0]);
+  let extractColumns = [];
   let columns = [{}];
-  extractColumns.map((c) => {
-    columns.push({ path: c, label: c.toLocaleUpperCase() });
-  });
+  if (data[0]) {
+    extractColumns = Object.keys(data[0]);
+    extractColumns.map((c) => {
+      columns.push({ path: c, label: c.toLocaleUpperCase() });
+    });
+  } else columns = [{ path: "No Data", label: "No Data" }];
+
   return columns;
 }

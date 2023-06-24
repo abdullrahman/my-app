@@ -8,7 +8,11 @@ export default async function About() {
     return users;
   };
   const users = await getUsers();
-  const columns = Object.keys(users[0]);
+  let columns = [];
+  if (users[0]) {
+    console.log(users[0]);
+    columns = Object.keys(users[0]);
+  } else columns = ["No Rows"];
   return (
     <>
       <div>

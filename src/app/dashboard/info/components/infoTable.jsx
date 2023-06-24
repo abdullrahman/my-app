@@ -1,27 +1,76 @@
 import React from "react";
+import Link from "next/link";
 import { PrismaClient } from "@prisma/client";
 import Table from "../../common/tabel/Table";
+import ButtonUi from "./buttonUi";
 import { getColumns } from "../../common/tabel/getColumns";
+import { XCircleIcon, PencilIcon } from "@heroicons/react/20/solid";
 export default async function InfoTable() {
   const prisma = new PrismaClient();
-  const getUsers = async () => {
-    const users = await prisma.user.findMany({
+  const getInfo = async () => {
+    const info = await prisma.info.findMany({
       select: {
         id: true,
         name: true,
         email: true,
-        image: true,
-        createdAt: false,
+        password: true,
+        careerObJ: true,
+        summary: true,
+        city: true,
+        role: true,
+        onDelete: true,
       },
     });
-    return users;
+    return info;
+    // const res = await fetch("http://localhost:3000/dashboard/info/api");
+    // return res.json();
+  };
+  const info = await getInfo();
+  // const info = data.info;
+  // console.log(info);
+  const columns = getColumns(info);
+  const buttons = [
+    {
+      key: "delete",
+      content: (item) => <ButtonUi item={item.id} />,
+    },
+    {
+      key: "edit",
+      content: (item) => (
+        <Link
+          className="text-indigo-600 hover:text-indigo-900"
+          href={`/dashboard/info/${item.id}`}
+        >
+          <PencilIcon className="h-5 w-5" aria-hidden="true" />
+          <span className="sr-only"></span>
+        </Link>
+      ),
+    },
+  ];
+  buttons.map((b) => {
+    columns.push(b);
+  });
+  //console.log(info.sort((a, b) => (b.name > a.name ? 1 : -1)));
+
+  const handelOnSort = () => {
+    // setSortedCulomns(sortedCulomns);
+    const result = [...data];
+    const sortedData = _.orderBy(
+      result
+      // [sortedCulomns.culomn],
+      // [sortedCulomns.order]
+    );
+    setData(sortedData);
   };
 
-  const users = await getUsers();
-  const columns = getColumns(users);
   return (
     <div>
-      <Table culomns={columns} data={users} title={"Information"} />
+      <Table
+        columns={columns}
+        data={info}
+        title={"Information"}
+        onSort={handelOnSort}
+      />
     </div>
   );
 }

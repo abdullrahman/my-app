@@ -34,12 +34,12 @@ model Info {
   exper       Experience[]
   project     Project[]
   socialMedia SocialMedia[]
+  certificate Certificate[]
   careerObJ   String
   summary     String
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   onDelete    Boolean            @default(false)
-  Certificate Certificate[]
 }
 
 enum CertificateType {
@@ -52,17 +52,17 @@ enum CertificateType {
 model Certificate {
   id              Int             @id @default(autoincrement())
   certiType       CertificateType
-  certiFrom       String
-  certiGPA        String
-  certiUniv       String
-  certiGrade      String
-  certiFromDate   DateTime
-  certiToDate     DateTime
-  certiTotalHours String
-  InfoId          Int
-  info            Info            @relation(fields: [InfoId], references: [id])
+  certiFrom       String?
+  certiGPA        String?
+  certiUniv       String?
+  certiGrade      String?
+  certiFromDate   DateTime?
+  certiToDate     DateTime?
+  certiTotalHours String?
+  InfoId          Int?
+  info            Info?           @relation(fields: [InfoId], references: [id])
   createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  updatedAt       DateTime?       @updatedAt
   onDelete        Boolean         @default(false)
 }
 

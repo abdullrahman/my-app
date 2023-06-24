@@ -25,11 +25,11 @@ function Table(props) {
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <table className="min-w-full divide-y divide-gray-300">
             <TableHeader
-              culomns={props.culomns}
+              columns={props.columns}
               sortedCulomns={props.sortedCulomns}
               onSort={props.onSort}
             />
-            <TableBody data={props.data} culomns={props.culomns} />
+            <TableBody data={props.data} columns={props.columns} />
           </table>
         </div>
       </div>
