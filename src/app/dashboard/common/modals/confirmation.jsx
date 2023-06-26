@@ -67,7 +67,7 @@ export default function Confirmation(props) {
                       props.onConfirmClick();
                     }}
                   >
-                    Deactivate
+                    Confirm
                   </button>
                   <button
                     type="button"

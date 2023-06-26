@@ -1,6 +1,5 @@
 "use client";
 import { React, useState } from "react";
-
 import Error from "next/error";
 import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
@@ -8,25 +7,35 @@ import {
   SuccessfulMessage,
   ErrorMessage,
 } from "../../common/notifications/successfull";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import axios from "axios";
 
-export default function InfoForm() {
+export default async function InfoForm(props) {
+  const { data } = props;
   const route = useRouter();
+  const path = useParams();
+  console.log(data);
   const [status, setStatus] = useState(null);
   const [show, setShow] = useState(false);
   const [message, setMessage] = useState("");
+
+  const apiUrl = {
+    setNew: "/dashboard/info/newInfo/api",
+    setUpdate: `/dashboard/info/${path.id}/api`,
+  };
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is a Required Field"),
     email: Yup.string().email().required("Email is a Required Field"),
     password: Yup.string().required("Password is a Required Field"),
-    careerObjective: Yup.string().required(
-      "Career Objective is a Required Field"
-    ),
+    careerObJ: Yup.string().required("Career Objective is a Required Field"),
     summary: Yup.string().required("Summary is a Required Field"),
     city: Yup.string().required("City is a Required Field"),
     role: Yup.string().required("Role is a Required Field"),
+    onDelete: Yup.boolean().required("Deleted is a Required Field"),
   });
+
   const handelSubmit = (values) => {
+    console.log(values);
     postdata(values);
   };
   const handleErrors = async (resp) => {
@@ -39,7 +48,7 @@ export default function InfoForm() {
     throw new Error(resp.statusText);
   };
   const postdata = async (data) => {
-    const res = await fetch("/dashboard/info/newInfo/api", {
+    const res = await fetch(data.email ? apiUrl.setUpdate : apiUrl.setNew, {
       method: "POST",
       body: JSON.stringify({ data }),
     });
@@ -63,13 +72,14 @@ export default function InfoForm() {
       <Formik
         validationSchema={validationSchema}
         initialValues={validationSchema.cast({
-          name: "",
-          email: "",
-          password: "",
-          careerObjective: "",
-          summary: "",
-          city: "",
-          role: "",
+          name: data.getUserInfo.name,
+          email: data.getUserInfo.email,
+          password: data.getUserInfo.password,
+          careerObJ: data.getUserInfo.careerObJ,
+          summary: data.getUserInfo.summary,
+          city: data.getUserInfo.city,
+          role: data.getUserInfo.role,
+          onDelete: data.getUserInfo.onDelete,
         })}
         onSubmit={handelSubmit}
       >
@@ -144,7 +154,7 @@ export default function InfoForm() {
                       />
                     </div>
                     <label
-                      htmlFor="email"
+                      htmlFor="password"
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
                       {errors.password}
@@ -154,7 +164,7 @@ export default function InfoForm() {
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-3">
                     <label
-                      htmlFor="careerObjective"
+                      htmlFor="careerObJ"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Career Objective
@@ -162,16 +172,16 @@ export default function InfoForm() {
                     <div className="mt-2">
                       <Field
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="careerObjective"
-                        id="careerObjective"
+                        name="careerObJ"
+                        id="careerObJ"
                         component="textarea"
                       />
                     </div>
                     <label
-                      htmlFor="careerObjective"
+                      htmlFor="careerObJ"
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
-                      {errors.careerObjective}
+                      {errors.careerObJ}
                     </label>
                   </div>
                 </div>
@@ -192,7 +202,7 @@ export default function InfoForm() {
                       />
                     </div>
                     <label
-                      htmlFor="email"
+                      htmlFor="summary"
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
                       {errors.summary}
@@ -202,12 +212,21 @@ export default function InfoForm() {
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-3">
                     <label
-                      htmlFor="summary"
+                      htmlFor="city"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       City
                     </label>
                     <div className="mt-2">
+                      {/* <Field
+                        label="city"
+                        name="city"
+                        id="city"
+                        as={Select}
+                        selected={values.city}
+                        options={cityOptions}
+                        onChange={(val) => setFieldValue("city", val)}
+                      /> */}
                       <Field
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         name="city"
@@ -244,12 +263,52 @@ export default function InfoForm() {
                         <option value="ADMIN">ADMIN</option>
                         <option value="USER">USER</option>
                       </Field>
+                      {/* <Field
+                        label="role"
+                        name="role"
+                        id="role"
+                        as={Select}
+                        selected={values.role}
+                        options={roleOptions}
+                        onChange={(val) => setFieldValue("role", val)}
+                      /> */}
                     </div>
                     <label
-                      htmlFor="email"
+                      htmlFor="role"
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
                       {errors.role}
+                    </label>
+                  </div>
+                </div>
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <fieldset>
+                      <legend className="text-base font-semibold leading-6 text-gray-900">
+                        on Delete
+                      </legend>
+                      <div className="mt-4 divide-y divide-gray-200 border-b border-t border-gray-200">
+                        <div className="relative flex items-start py-4">
+                          <div className="min-w-0 flex-1 text-sm leading-6">
+                            <label className="select-none font-medium text-green-700">
+                              Deleted ?
+                            </label>
+                          </div>
+                          <div className="ml-3 flex h-6 items-center">
+                            <Field
+                              name="onDelete"
+                              type="checkbox"
+                              className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <label
+                      htmlFor="onDelete"
+                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
+                    >
+                      {errors.onDelete}
                     </label>
                   </div>
                 </div>

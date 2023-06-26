@@ -1,5 +1,5 @@
 "use client";
-import { React, useState } from "react";
+import { React, useState, Suspense } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import {
@@ -7,21 +7,22 @@ import {
   ErrorMessage,
 } from "../../common/notifications/successfull";
 import Confirmation from "../../common/modals/confirmation";
+import Processing from "../../common/modals/processing";
 export default function ButtonUi(props) {
   const rout = useRouter();
   const path = usePathname();
+
   const [status, setStatus] = useState(null);
   const [messageShow, setMessageShow] = useState(false);
   const [message, setMessage] = useState("");
 
   const [confirmShow, setConfirmShow] = useState(false);
-
+  const [showProcessing, setShowProcessing] = useState(false);
+  console.log(messageShow, confirmShow, status);
   const handleErrors = async (resp) => {
+    setConfirmShow(false);
     setMessageShow(true);
     setMessage(resp.statusText);
-    setTimeout(() => {
-      setMessageShow(false);
-    }, 2000);
     throw new Error(resp.statusText);
   };
 
@@ -29,6 +30,7 @@ export default function ButtonUi(props) {
     deleteInfo(props.item);
   };
   const deleteInfo = async (item) => {
+    setShowProcessing(true);
     const res = await fetch("/dashboard/info/api", {
       method: "POST",
       body: JSON.stringify({ item }),
@@ -37,19 +39,19 @@ export default function ButtonUi(props) {
     const errorCode = res.ok ? false : res.status;
     if (errorCode) handleErrors(res);
     else {
+      setConfirmShow(false);
       setMessageShow(true);
       setMessage("Successsfully Deleted");
       rout.replace(path);
-      setTimeout(() => {
-        setMessageShow(false);
-      }, 3000);
     }
+    setShowProcessing(false);
   };
   const handelConfirmShow = () => {
     setConfirmShow(!confirmShow);
   };
   return (
     <>
+      {showProcessing && <Processing message={"Deleting..."} />}
       {confirmShow && (
         <Confirmation
           title={"Delete Info"}

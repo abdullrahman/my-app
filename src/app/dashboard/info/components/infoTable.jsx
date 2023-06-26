@@ -4,8 +4,11 @@ import { PrismaClient } from "@prisma/client";
 import Table from "../../common/tabel/Table";
 import ButtonUi from "./buttonUi";
 import { getColumns } from "../../common/tabel/getColumns";
-import { XCircleIcon, PencilIcon } from "@heroicons/react/20/solid";
-export default async function InfoTable() {
+import { PencilIcon } from "@heroicons/react/20/solid";
+
+export default async function InfoTable(props) {
+  console.log(props);
+
   const prisma = new PrismaClient();
   const getInfo = async () => {
     const info = await prisma.info.findMany({
@@ -22,10 +25,10 @@ export default async function InfoTable() {
       },
     });
     return info;
-    // const res = await fetch("http://localhost:3000/dashboard/info/api");
-    // return res.json();
   };
+
   const info = await getInfo();
+
   // const info = data.info;
   // console.log(info);
   const columns = getColumns(info);

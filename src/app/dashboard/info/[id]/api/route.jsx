@@ -2,9 +2,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(req) {
-  console.log(req);
-  const getUserInfo = await prisma.info.findMany({
+export async function GET(req, { params }) {
+  const id = params.id;
+  const getUserInfo = await prisma.info.findUnique({
     select: {
       id: true,
       name: true,
@@ -16,12 +16,17 @@ export async function GET(req) {
       role: true,
       onDelete: true,
     },
+    where: {
+      id: parseInt(id),
+    },
   });
   return new Response(JSON.stringify({ getUserInfo }));
 }
-export async function POST(req) {
+
+export async function POST(req, { params }) {
   const body = await req.json();
-  const newInfo = await prisma.info.create({
+  const id = params.id;
+  const newInfo = await prisma.info.update({
     data: {
       name: body.data.name,
       email: body.data.email,
@@ -30,12 +35,15 @@ export async function POST(req) {
       summary: body.data.summary,
       city: body.data.city,
       role: body.data.role,
+      onDelete: body.data.onDelete,
       skil: undefined,
       exper: undefined,
       project: undefined,
       socialMedia: undefined,
     },
+    where: {
+      id: parseInt(id),
+    },
   });
-  console.log(body.data);
-  return new Response(JSON.stringify({ body }));
+  return new Response(JSON.stringify({ newInfo }));
 }
