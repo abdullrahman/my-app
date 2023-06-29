@@ -16,11 +16,13 @@
     "@vercel/postgres": "^0.3.1",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
     "formic": "^0.0.10",
     "formik": "^2.4.2",
     "heroicons": "^2.0.18",
     "lodash": "^4.17.21",
     "next": "13.4.6",
+    "next-auth": "^4.22.1",
     "postcss": "8.4.24",
     "prettier-plugin-prisma": "^4.13.0",
     "prisma": "^4.15.0",
@@ -31,6 +33,7 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/react": "18.2.14",
     "typescript": "5.1.3"
   }

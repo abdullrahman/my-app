@@ -1,53 +1,71 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
-export default function Home() {
-  const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [img, setImg] = useState(null);
-  const handelSubmit = (e) => {
-    e.preventDefault();
-    const data = { name: name, email: email, img: img };
-    // console.log(name, email, img);
-    postdata(data);
-  };
-  const postdata = async (data) => {
-    await fetch("/seed", {
-      method: "POST",
-      body: JSON.stringify({ data }),
-    });
-  };
+// import { useState } from "react";
+// import { getServerSession } from "next-auth";
+// import { authOptions } from "./api/auth/[...nextauth]/route";
+import User from "./user/page";
+import { signIn, signOut } from "next-auth/react";
+export default async function Home() {
+  // const session = await getServerSession(authOptions);
+  // const [name, setName] = useState(null);
+  // const [email, setEmail] = useState(null);
+  // const [img, setImg] = useState(null);
+  // const handelSubmit = (e) => {
+  //   e.preventDefault();
+  //   const data = { name: name, email: email, img: img };
+  //   // console.log(name, email, img);
+  //   postdata(data);
+  // };
+  // const postdata = async (data) => {
+  //   await fetch("/seed", {
+  //     method: "POST",
+  //     body: JSON.stringify({ data }),
+  //   });
+  // };
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
         <div className=" w-full h-full bg-white flex-col flex">
-          <form onSubmit={handelSubmit}>
+          {/* <form>
             <input
               type="text"
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
+              // onChange={(e) => {
+              //   setName(e.target.value);
+              // }}
               id="name"
             />
             <input
               type="text"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
+              // onChange={(e) => {
+              //   setEmail(e.target.value);
+              // }}
               id="email"
             />
             <input
               type="text"
-              onChange={(e) => {
-                setImg(e.target.value);
-              }}
+              // onChange={(e) => {
+              //   setImg(e.target.value);
+              // }}
               id="img"
             />
-            <button type="submit" value="submit" className="text-black">
-              submit
-            </button>
-          </form>
+          </form> */}
+          <button
+            onClick={() => signOut()}
+            value="submit"
+            className="text-black"
+          >
+            out
+          </button>
+          <button
+            onClick={() => signIn()}
+            value="submit"
+            className="text-black"
+          >
+            in
+          </button>
         </div>
+        <div>{/* <pre>{JSON.stringify(session)}</pre> */}</div>
+        <User />
         <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
           <a
             className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"

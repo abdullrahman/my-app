@@ -11,10 +11,10 @@ import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
 
 export default async function InfoForm(props) {
-  const { data } = props;
+  const { data: updatedData } = props;
   const route = useRouter();
   const path = useParams();
-  console.log(data);
+  console.log(updatedData);
   const [status, setStatus] = useState(null);
   const [show, setShow] = useState(false);
   const [message, setMessage] = useState("");
@@ -48,7 +48,7 @@ export default async function InfoForm(props) {
     throw new Error(resp.statusText);
   };
   const postdata = async (data) => {
-    const res = await fetch(data.email ? apiUrl.setUpdate : apiUrl.setNew, {
+    const res = await fetch(updatedData ? apiUrl.setUpdate : apiUrl.setNew, {
       method: "POST",
       body: JSON.stringify({ data }),
     });
@@ -71,16 +71,29 @@ export default async function InfoForm(props) {
       {show && !status ? <ErrorMessage message={message} /> : <></>}
       <Formik
         validationSchema={validationSchema}
-        initialValues={validationSchema.cast({
-          name: data.getUserInfo.name,
-          email: data.getUserInfo.email,
-          password: data.getUserInfo.password,
-          careerObJ: data.getUserInfo.careerObJ,
-          summary: data.getUserInfo.summary,
-          city: data.getUserInfo.city,
-          role: data.getUserInfo.role,
-          onDelete: data.getUserInfo.onDelete,
-        })}
+        initialValues={
+          updatedData
+            ? validationSchema.cast({
+                name: updatedData.getUserInfo.name,
+                email: updatedData.getUserInfo.email,
+                password: updatedData.getUserInfo.password,
+                careerObJ: updatedData.getUserInfo.careerObJ,
+                summary: updatedData.getUserInfo.summary,
+                city: updatedData.getUserInfo.city,
+                role: updatedData.getUserInfo.role,
+                onDelete: updatedData.getUserInfo.onDelete,
+              })
+            : {
+                name: "",
+                email: "",
+                password: "",
+                careerObJ: "",
+                summary: "",
+                city: "",
+                role: "",
+                onDelete: "",
+              }
+        }
         onSubmit={handelSubmit}
       >
         {({ errors }) => (

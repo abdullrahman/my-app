@@ -1,8 +1,9 @@
 import { React, useState, Fragment } from "react";
 import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { PowerIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import { signOut } from "next-auth/react";
 
 export default function Navigation(props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -151,16 +152,11 @@ export default function Navigation(props) {
               </li>
               <li className="-mx-6 mt-auto">
                 <a
-                  href="#"
-                  className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50"
+                  onClick={() => signOut()}
+                  className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-red-700 cursor-pointer hover:bg-gray-50"
                 >
-                  <img
-                    className="h-8 w-8 rounded-full bg-gray-50"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
-                  <span className="sr-only">Your profile</span>
-                  <span aria-hidden="true">Tom Cook</span>
+                  <PowerIcon className="h-6 w-6" aria-hidden="true" />
+                  <span aria-hidden="true">Sign Out</span>
                 </a>
               </li>
             </ul>
@@ -180,13 +176,13 @@ export default function Navigation(props) {
         <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
           Dashboard
         </div>
-        <a href="#">
+        <a
+          href="#"
+          className="text-red-700 cursor-pointer"
+          onClick={() => signOut()}
+        >
           <span className="sr-only">Your profile</span>
-          <img
-            className="h-8 w-8 rounded-full bg-gray-50"
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            alt=""
-          />
+          <PowerIcon className="h-6 w-6" aria-hidden="true" />
         </a>
       </div>
     </>
