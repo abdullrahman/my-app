@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-
+import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 function TableBody(props) {
   const renderCell = (item, columns) => {
     if (columns.content) return columns.content(item);
@@ -16,14 +16,20 @@ function TableBody(props) {
           Active
         </span>
       );
-    } else return _.get(item, columns.path);
+    } else {
+      const data = item[columns.path];
+      if (data?.length === "undefined") return;
+      else if (data?.length > 30)
+        return <div title={data}>{data.substring(0, 20)} ...</div>;
+      return data; //_.get(item, columns.path);
+    }
   };
   const setKey = (items, culomn) => {
-    return items.id + (culomn.path || culomn.key);
+    return items?.id + (culomn?.path || culomn?.key);
   };
   return (
     <tbody>
-      {props.data.map((d) => (
+      {props.data.map((d, index) => (
         <tr key={d.id}>
           {props.columns.map((c) => (
             <td

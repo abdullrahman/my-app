@@ -6,7 +6,7 @@ export default function Processing(props) {
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
       <div className="fixed inset-0 overflow-y-auto">
         <div className="flex min-h-[50%] items-center justify-center p-4 text-center sm:items-center sm:p-0">
-          <div class="animate-pulse rounded-md p-4 max-w-lg w-full ml-20 my-40">
+          <div className="animate-pulse rounded-md p-4 max-w-lg w-full ml-20 my-40">
             <div className="rounded-md px-3 bg-slate-700 py-3 my-2 flex text-center text-sm font-semibold text-white shadow-sm ">
               {props.message}
               {/* <button
@@ -31,8 +31,8 @@ export default function Processing(props) {
                 {props.message}
               </button> */}
             </div>
-            <div class=" flex space-x-4">
-              <div class="rounded-full bg-slate-700 h-10 w-10 items-center ">
+            <div className=" flex space-x-4">
+              <div className="rounded-full bg-slate-700 h-10 w-10 items-center ">
                 <svg
                   className="animate-spin h-10 w-10 mr-3 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -48,14 +48,14 @@ export default function Processing(props) {
                   />
                 </svg>
               </div>
-              <div class="flex-1 space-y-6 py-1">
-                <div class="h-2 bg-slate-700 rounded"></div>
-                <div class="space-y-3">
-                  <div class="grid grid-cols-3 gap-4">
-                    <div class="h-2 bg-slate-700 rounded col-span-2"></div>
-                    <div class="h-2 bg-slate-700 rounded col-span-1"></div>
+              <div className="flex-1 space-y-6 py-1">
+                <div className="h-2 bg-slate-700 rounded"></div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-2 bg-slate-700 rounded col-span-2"></div>
+                    <div className="h-2 bg-slate-700 rounded col-span-1"></div>
                   </div>
-                  <div class="h-2 bg-slate-700 rounded"></div>
+                  <div className="h-2 bg-slate-700 rounded"></div>
                 </div>
               </div>
             </div>

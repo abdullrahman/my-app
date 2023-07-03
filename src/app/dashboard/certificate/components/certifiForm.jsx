@@ -1,47 +1,65 @@
-"use client";
+// certiType;
+// certiFrom;
+// certiGPA;
+// certiUniv;
+// certiGrade;
+// certiFromDate;
+// certiToDate;
+// certiTotalHours;
+//  imports
+//  validation schima
+
 import { React, useState } from "react";
-import Error from "next/error";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import * as Yup from "yup";
-import { Formik, Form, Field } from "formik";
-import { useRouter, useParams } from "next/navigation";
+import { Form, Formik, Field } from "formik";
+import Datepicker from "react-tailwindcss-datepicker";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default async function InfoForm(props) {
-  const { data: updatedData } = props;
+export default function CertifiForm() {
+  const session = useSession();
   const route = useRouter();
-  const path = useParams();
-
-  const apiUrl = {
-    setNew: "/dashboard/info/newInfo/api",
-    setUpdate: `/dashboard/info/${path.id}/api`,
+  const [value, setValue] = useState({
+    startDate: null,
+    endDate: null,
+  });
+  const handleValueChange = (newValue) => {
+    console.log("newValue:", newValue);
+    setValue(newValue);
   };
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is a Required Field"),
-    email: Yup.string().email().required("Email is a Required Field"),
-    password: Yup.string().required("Password is a Required Field"),
-    careerObJ: Yup.string().required("Career Objective is a Required Field"),
-    summary: Yup.string().required("Summary is a Required Field"),
-    city: Yup.string().required("City is a Required Field"),
-    role: Yup.string().required("Role is a Required Field"),
-    onDelete: Yup.boolean().required("Deleted is a Required Field"),
+    certiType: Yup.string().required("Certificate Type is Requred"),
+    certiFrom: Yup.string().required("Certificate From is Requred"),
+    certiMajor: Yup.string().required("Certificate Major is Requred"),
+    certiGPA: Yup.string().nullable(),
+    certiUniv: Yup.string().required("Certificate Univercity is Requred"),
+    certiGrade: Yup.string().nullable(),
+    certiFromDate: Yup.date().nullable(),
+    certiToDate: Yup.date().nullable(),
+    certiTotalHours: Yup.string().nullable(),
   });
-
   const notifySuccess = (message) => {
     toast.success(message, { theme: "colored" });
   };
   const notifyError = (message) => {
     toast.error(message, { theme: "colored" });
   };
+
   const handelSubmit = (values) => {
+    values.certiFromDate = new Date(value.startDate);
+    values.certiToDate = new Date(value.endDate);
+    values.InfoId = session.data.id;
     postdata(values);
+    console.log(values);
   };
   const handleErrors = async (resp) => {
     notifyError(resp.statusText);
     throw new Error(resp.statusText);
   };
   const postdata = async (data) => {
-    const res = await fetch(updatedData ? apiUrl.setUpdate : apiUrl.setNew, {
+    const res = await fetch("/dashboard/certificate/newCertificate/api", {
       method: "POST",
       body: JSON.stringify({ data }),
     });
@@ -58,35 +76,21 @@ export default async function InfoForm(props) {
     }
   };
   return (
-    <>
+    <div>
       <ToastContainer limit={2} />
-      {/* {show && status ? <SuccessfulMessage message={message} /> : <></>}
-      {show && !status ? <ErrorMessage message={message} /> : <></>} */}
       <Formik
         validationSchema={validationSchema}
-        initialValues={
-          updatedData
-            ? validationSchema.cast({
-                name: updatedData.getUserInfo.name,
-                email: updatedData.getUserInfo.email,
-                password: updatedData.getUserInfo.password,
-                careerObJ: updatedData.getUserInfo.careerObJ,
-                summary: updatedData.getUserInfo.summary,
-                city: updatedData.getUserInfo.city,
-                role: updatedData.getUserInfo.role,
-                onDelete: updatedData.getUserInfo.onDelete,
-              })
-            : {
-                name: "",
-                email: "",
-                password: "",
-                careerObJ: "",
-                summary: "",
-                city: "",
-                role: "",
-                onDelete: "",
-              }
-        }
+        initialValues={validationSchema.cast({
+          certiType: "",
+          certiFrom: "",
+          certiMajor: "",
+          certiGPA: "",
+          certiUniv: "",
+          certiGrade: "",
+          certiFromDate: value.startDate,
+          certiToDate: value.endDate,
+          certiTotalHours: "",
+        })}
         onSubmit={handelSubmit}
       >
         {({ errors }) => (
@@ -94,230 +98,206 @@ export default async function InfoForm(props) {
             <div className="space-y-12">
               <div className="border-b border-gray-900/10 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
-                  Personal Information
+                  Certification Information
                 </h2>
+
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-3">
                     <label
-                      htmlFor="name"
+                      htmlFor="certiType"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Name
+                      Certification Type
                     </label>
                     <div className="mt-2">
                       <Field
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="name"
-                        id="name"
-                      />
-                    </div>
-                    <label
-                      htmlFor="name"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.name}
-                    </label>
-                  </div>
-                </div>
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Email
-                    </label>
-                    <div className="mt-2">
-                      <Field
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="email"
-                        id="email"
-                        type="email"
-                      />
-                    </div>
-                    <label
-                      htmlFor="email"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.email}
-                    </label>
-                  </div>
-                </div>
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="password"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Password
-                    </label>
-                    <div className="mt-2">
-                      <Field
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="password"
-                        id="password"
-                        type="password"
-                      />
-                    </div>
-                    <label
-                      htmlFor="password"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.password}
-                    </label>
-                  </div>
-                </div>
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="careerObJ"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Career Objective
-                    </label>
-                    <div className="mt-2">
-                      <Field
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="careerObJ"
-                        id="careerObJ"
-                        component="textarea"
-                      />
-                    </div>
-                    <label
-                      htmlFor="careerObJ"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.careerObJ}
-                    </label>
-                  </div>
-                </div>
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="summary"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Summary
-                    </label>
-                    <div className="mt-2">
-                      <Field
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="summary"
-                        id="summary"
-                        component="textarea"
-                      />
-                    </div>
-                    <label
-                      htmlFor="summary"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.summary}
-                    </label>
-                  </div>
-                </div>
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="city"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      City
-                    </label>
-                    <div className="mt-2">
-                      {/* <Field
-                        label="city"
-                        name="city"
-                        id="city"
-                        as={Select}
-                        selected={values.city}
-                        options={cityOptions}
-                        onChange={(val) => setFieldValue("city", val)}
-                      /> */}
-                      <Field
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="city"
-                        id="city"
+                        name="certiType"
+                        id="certiType"
                         component="select"
                       >
-                        <option value="Riyadh">Riyadh</option>
-                        <option value="Jeddah">Jeddah</option>
+                        <option value="Associate">Associate</option>
+                        <option value="Recomendation">Recomendation</option>
+                        <option value="Distinguished">Distinguished</option>
+                        <option value="OnlinCertificate">
+                          Onlin Certificate
+                        </option>
                       </Field>
                     </div>
                     <label
-                      htmlFor="city"
+                      htmlFor="certiType"
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
-                      {errors.city}
+                      {errors.certiType}
                     </label>
                   </div>
                 </div>
+
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-3">
                     <label
-                      htmlFor="role"
+                      htmlFor="certiFrom"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Role
+                      Cerificate From
                     </label>
                     <div className="mt-2">
                       <Field
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="role"
-                        id="role"
-                        component="select"
-                      >
-                        <option value="ADMIN">ADMIN</option>
-                        <option value="USER">USER</option>
-                      </Field>
-                      {/* <Field
-                        label="role"
-                        name="role"
-                        id="role"
-                        as={Select}
-                        selected={values.role}
-                        options={roleOptions}
-                        onChange={(val) => setFieldValue("role", val)}
-                      /> */}
+                        name="certiFrom"
+                        id="certiFrom"
+                      />
                     </div>
                     <label
-                      htmlFor="role"
+                      htmlFor="certiFrom"
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
-                      {errors.role}
+                      {errors.certiFrom}
                     </label>
                   </div>
                 </div>
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-3">
-                    <fieldset>
-                      <legend className="text-base font-semibold leading-6 text-gray-900">
-                        on Delete
-                      </legend>
-                      <div className="mt-4 divide-y divide-gray-200 border-b border-t border-gray-200">
-                        <div className="relative flex items-start py-4">
-                          <div className="min-w-0 flex-1 text-sm leading-6">
-                            <label className="select-none font-medium text-green-700">
-                              Deleted ?
-                            </label>
-                          </div>
-                          <div className="ml-3 flex h-6 items-center">
-                            <Field
-                              name="onDelete"
-                              type="checkbox"
-                              className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </fieldset>
                     <label
-                      htmlFor="onDelete"
+                      htmlFor="certiMajor"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Cerificate Major
+                    </label>
+                    <div className="mt-2">
+                      <Field
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        name="certiMajor"
+                        id="certiMajor"
+                      />
+                    </div>
+                    <label
+                      htmlFor="certiMajor"
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
-                      {errors.onDelete}
+                      {errors.certiMajor}
                     </label>
                   </div>
                 </div>
+
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="certiGPA"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Certificate GPA
+                    </label>
+                    <div className="mt-2">
+                      <Field
+                        className="block w-[20%] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        name="certiGPA"
+                        id="certiGPA"
+                      />
+                    </div>
+                    <label
+                      htmlFor="certiGPA"
+                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
+                    >
+                      {errors.certiGPA}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="certiUniv"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Certificate Univ
+                    </label>
+                    <div className="mt-2">
+                      <Field
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        name="certiUniv"
+                        id="certiUniv"
+                      />
+                    </div>
+                    <label
+                      htmlFor="certiUniv"
+                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
+                    >
+                      {errors.certiUniv}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="certiGrade"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Certificate Grade
+                    </label>
+                    <div className="mt-2">
+                      <Field
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        name="certiGrade"
+                        id="certiGrade"
+                      />
+                    </div>
+                    <label
+                      htmlFor="certiGrade"
+                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
+                    >
+                      {errors.certiGrade}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="certiFromDate"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Certificate From-To Date
+                    </label>
+                    <div className="mt-2">
+                      <Datepicker
+                        value={value}
+                        onChange={handleValueChange}
+                        showShortcuts={true}
+                        primaryColor="blue"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="certiTotalHours"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Certificate Total Hours
+                    </label>
+                    <div className="mt-2 flex gap-2">
+                      <Field
+                        className="block w-[15%] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        name="certiTotalHours"
+                        id="certiTotalHours"
+                      />
+                      <label className="block text-sm font-medium leading-6 text-gray-900">
+                        Hours
+                      </label>
+                    </div>
+                    <label
+                      htmlFor="certiTotalHours"
+                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
+                    >
+                      {errors.certiTotalHours}
+                    </label>
+                  </div>
+                </div>
+
                 <div className="mt-6 flex items-center justify-end gap-x-6">
                   <button
                     type="button"
@@ -337,6 +317,6 @@ export default async function InfoForm(props) {
           </Form>
         )}
       </Formik>
-    </>
+    </div>
   );
 }

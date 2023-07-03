@@ -39,15 +39,17 @@ CREATE TABLE "Info" (
 CREATE TABLE "Certificate" (
     "id" SERIAL NOT NULL,
     "certiType" "CertificateType" NOT NULL,
-    "certiFrom" TEXT NOT NULL,
-    "certiGPA" TEXT NOT NULL,
-    "certiUniv" TEXT NOT NULL,
-    "certiGrade" TEXT NOT NULL,
-    "certiFromDate" TIMESTAMP(3) NOT NULL,
-    "certiToDate" TIMESTAMP(3) NOT NULL,
-    "certiTotalHours" TEXT NOT NULL,
+    "certiFrom" TEXT,
+    "certiMajor" TEXT,
+    "certiGPA" TEXT,
+    "certiUniv" TEXT,
+    "certiGrade" TEXT,
+    "certiFromDate" TIMESTAMP(3),
+    "certiToDate" TIMESTAMP(3),
+    "certiTotalHours" TEXT,
+    "InfoId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3),
     "onDelete" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Certificate_pkey" PRIMARY KEY ("id")
@@ -119,6 +121,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Info_email_key" ON "Info"("email");
+
+-- AddForeignKey
+ALTER TABLE "Certificate" ADD CONSTRAINT "Certificate_InfoId_fkey" FOREIGN KEY ("InfoId") REFERENCES "Info"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Skil" ADD CONSTRAINT "Skil_InfoId_fkey" FOREIGN KEY ("InfoId") REFERENCES "Info"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,14 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
+  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
 model User {
@@ -19,10 +17,6 @@ model User {
   createdAt DateTime @default(now())
 }
 
-enum UserPermissionRole {
-  ADMIN
-}
-
 model Info {
   id          Int                @id @default(autoincrement())
   name        String
@@ -30,29 +24,23 @@ model Info {
   email       String             @unique
   password    String
   role        UserPermissionRole @default(ADMIN)
-  skil        Skil[]
-  exper       Experience[]
-  project     Project[]
-  socialMedia SocialMedia[]
-  certificate Certificate[]
   careerObJ   String
   summary     String
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   onDelete    Boolean            @default(false)
-}
-
-enum CertificateType {
-  Associate
-  Recomendation
-  Distinguished
-  OnlinCertificate
+  certificate Certificate[]
+  exper       Experience[]
+  project     Project[]
+  skil        Skil[]
+  socialMedia SocialMedia[]
 }
 
 model Certificate {
   id              Int             @id @default(autoincrement())
   certiType       CertificateType
   certiFrom       String?
+  certiMajor      String?
   certiGPA        String?
   certiUniv       String?
   certiGrade      String?
@@ -60,10 +48,10 @@ model Certificate {
   certiToDate     DateTime?
   certiTotalHours String?
   InfoId          Int?
-  info            Info?           @relation(fields: [InfoId], references: [id])
   createdAt       DateTime        @default(now())
   updatedAt       DateTime?       @updatedAt
   onDelete        Boolean         @default(false)
+  info            Info?           @relation(fields: [InfoId], references: [id])
 }
 
 model Skil {
@@ -71,10 +59,10 @@ model Skil {
   skil      String
   skilType  String
   InfoId    Int
-  info      Info     @relation(fields: [InfoId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   onDelete  Boolean  @default(false)
+  info      Info     @relation(fields: [InfoId], references: [id])
 }
 
 model Experience {
@@ -84,16 +72,10 @@ model Experience {
   experTodate   DateTime
   experYears    String
   InfoId        Int
-  info          Info     @relation(fields: [InfoId], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   onDelete      Boolean  @default(false)
-}
-
-enum ProjectType {
-  Website
-  WindowsApplication
-  TestTeam
+  info          Info     @relation(fields: [InfoId], references: [id])
 }
 
 model Project {
@@ -108,10 +90,10 @@ model Project {
   projectLink            String
   projectImg             String
   InfoId                 Int
-  info                   Info        @relation(fields: [InfoId], references: [id])
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @updatedAt
   onDelete               Boolean     @default(false)
+  info                   Info        @relation(fields: [InfoId], references: [id])
 }
 
 model SocialMedia {
@@ -119,8 +101,25 @@ model SocialMedia {
   sociName  String
   sociLink  String
   InfoId    Int
-  info      Info     @relation(fields: [InfoId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   onDelete  Boolean  @default(false)
+  info      Info     @relation(fields: [InfoId], references: [id])
+}
+
+enum UserPermissionRole {
+  ADMIN
+}
+
+enum CertificateType {
+  Associate
+  Recomendation
+  Distinguished
+  OnlinCertificate
+}
+
+enum ProjectType {
+  Website
+  WindowsApplication
+  TestTeam
 }

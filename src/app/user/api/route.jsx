@@ -15,18 +15,12 @@ export async function GET(req) {
       role: true,
       onDelete: true,
     },
+    where: {
+      id: 1,
+    },
+    include: {
+      certificate: true,
+    },
   });
   return new Response(JSON.stringify({ info }));
-}
-export async function POST(req) {
-  const body = await req.json();
-  const updateInfo = await prisma.info.update({
-    data: {
-      onDelete: true,
-    },
-    where: {
-      id: body.item,
-    },
-  });
-  return new Response(JSON.stringify({ body }));
 }

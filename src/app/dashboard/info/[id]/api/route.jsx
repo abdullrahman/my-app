@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import { hash } from "bcrypt";
 const prisma = new PrismaClient();
 
 export async function GET(req, { params }) {
@@ -26,11 +26,12 @@ export async function GET(req, { params }) {
 export async function POST(req, { params }) {
   const body = await req.json();
   const id = params.id;
+  const password = await hash(body.data.password, 12);
   const newInfo = await prisma.info.update({
     data: {
       name: body.data.name,
       email: body.data.email,
-      password: body.data.password,
+      password,
       careerObJ: body.data.careerObJ,
       summary: body.data.summary,
       city: body.data.city,

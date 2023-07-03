@@ -5,9 +5,14 @@ import { compare } from "bcrypt";
 
 const prisma = new PrismaClient();
 export const authOptions = {
+  pages: {
+    signIn: "/signin",
+    signOut: "/",
+  },
   session: {
     strategy: "jwt",
   },
+
   providers: [
     CredentialsProvider({
       name: "sign in",
@@ -21,9 +26,10 @@ export const authOptions = {
       },
       async authorize(credentals) {
         if (!credentals?.email || !credentals?.password) return null;
-        const user = await prisma.info.findUnique({
+        const user = await prisma.info.findFirst({
           where: {
             email: credentals.email,
+            onDelete: false,
           },
         });
         if (!user) return null;
@@ -42,19 +48,15 @@ export const authOptions = {
       },
     }),
   ],
-  // callbacks: {
-  //   jwt: async ({ token, user }) => {
-  //     if (user) {
-  //       token.id = user.id;
-  //       return token;
-  //     }
-  //   },
-  // session: async ({ session, user, token }) => {
-  //   //   if (session?.user) session.user.id = token.id;
-  //   //   session = { ...session, user: { id: user.id, ...session.user } };
-  //   return session;
-  // },
-  // },
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      return token;
+    },
+    session: async ({ session, user, token }) => {
+      session = { id: token.sub, ...session.user };
+      return session;
+    },
+  },
 };
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
