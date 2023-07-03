@@ -3,7 +3,7 @@ import { React, useState } from "react";
 import Error from "next/error";
 import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -11,7 +11,6 @@ export default async function InfoForm(props) {
   const { data: updatedData } = props;
   const route = useRouter();
   const path = useParams();
-
   const apiUrl = {
     setNew: "/dashboard/info/newInfo/api",
     setUpdate: `/dashboard/info/${path.id}/api`,
@@ -53,7 +52,7 @@ export default async function InfoForm(props) {
       notifySuccess("Data Successfully Added");
       setTimeout(() => {
         route.refresh();
-        route.replace("/dashboard/info");
+        route.replace("/dashboard/info/");
       }, 4000);
     }
   };

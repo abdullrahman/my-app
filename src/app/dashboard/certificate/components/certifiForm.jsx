@@ -8,23 +8,32 @@
 // certiTotalHours;
 //  imports
 //  validation schima
-
+"use client";
 import { React, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import * as Yup from "yup";
 import { Form, Formik, Field } from "formik";
 import Datepicker from "react-tailwindcss-datepicker";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function CertifiForm() {
+export default function CertifiForm(props) {
+  const { data: certiData } = props;
+  console.log(certiData);
   const session = useSession();
   const route = useRouter();
+  const path = useParams();
   const [value, setValue] = useState({
-    startDate: null,
-    endDate: null,
+    startDate: certiData ? certiData.certificateData.certiFromDate : null,
+    endDate: certiData ? certiData.certificateData.certiToDate : null,
   });
+
+  const apiUrl = {
+    setNew: "/dashboard/certificate/newCertificate/api",
+    setUpdate: `/dashboard/certificate/${path.id}/api`,
+  };
+
   const handleValueChange = (newValue) => {
     console.log("newValue:", newValue);
     setValue(newValue);
@@ -39,6 +48,7 @@ export default function CertifiForm() {
     certiFromDate: Yup.date().nullable(),
     certiToDate: Yup.date().nullable(),
     certiTotalHours: Yup.string().nullable(),
+    onDelete: Yup.boolean(),
   });
   const notifySuccess = (message) => {
     toast.success(message, { theme: "colored" });
@@ -52,14 +62,13 @@ export default function CertifiForm() {
     values.certiToDate = new Date(value.endDate);
     values.InfoId = session.data.id;
     postdata(values);
-    console.log(values);
   };
   const handleErrors = async (resp) => {
     notifyError(resp.statusText);
     throw new Error(resp.statusText);
   };
   const postdata = async (data) => {
-    const res = await fetch("/dashboard/certificate/newCertificate/api", {
+    const res = await fetch(certiData ? apiUrl.setUpdate : apiUrl.setNew, {
       method: "POST",
       body: JSON.stringify({ data }),
     });
@@ -71,7 +80,7 @@ export default function CertifiForm() {
       notifySuccess("Data Successfully Added");
       setTimeout(() => {
         route.refresh();
-        route.replace("/dashboard/info");
+        route.replace("/dashboard/certificate/");
       }, 4000);
     }
   };
@@ -80,17 +89,33 @@ export default function CertifiForm() {
       <ToastContainer limit={2} />
       <Formik
         validationSchema={validationSchema}
-        initialValues={validationSchema.cast({
-          certiType: "",
-          certiFrom: "",
-          certiMajor: "",
-          certiGPA: "",
-          certiUniv: "",
-          certiGrade: "",
-          certiFromDate: value.startDate,
-          certiToDate: value.endDate,
-          certiTotalHours: "",
-        })}
+        initialValues={
+          !certiData
+            ? validationSchema.cast({
+                certiType: "",
+                certiFrom: "",
+                certiMajor: "",
+                certiGPA: "",
+                certiUniv: "",
+                certiGrade: "",
+                certiFromDate: value.startDate,
+                certiToDate: value.endDate,
+                certiTotalHours: "",
+                onDelete: false,
+              })
+            : {
+                certiType: certiData.certificateData.certiType,
+                certiFrom: certiData.certificateData.certiFrom,
+                certiMajor: certiData.certificateData.certiMajor,
+                certiGPA: certiData.certificateData.certiGPA,
+                certiUniv: certiData.certificateData.certiUniv,
+                certiGrade: certiData.certificateData.certiGrade,
+                certiFromDate: value.startDate,
+                certiToDate: value.endDate,
+                certiTotalHours: certiData.certificateData.certiTotalHours,
+                onDelete: certiData.certificateData.onDelete,
+              }
+        }
         onSubmit={handelSubmit}
       >
         {({ errors }) => (
@@ -294,6 +319,38 @@ export default function CertifiForm() {
                       className="ml-2 block text-sm font-medium leading-6 text-red-600"
                     >
                       {errors.certiTotalHours}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <fieldset>
+                      <legend className="text-base font-semibold leading-6 text-gray-900">
+                        on Delete
+                      </legend>
+                      <div className="mt-4 divide-y divide-gray-200 border-b border-t border-gray-200">
+                        <div className="relative flex items-start py-4">
+                          <div className="min-w-0 flex-1 text-sm leading-6">
+                            <label className="select-none font-medium text-gray-900">
+                              Deleted ?
+                            </label>
+                          </div>
+                          <div className="ml-3 flex h-6 items-center">
+                            <Field
+                              name="onDelete"
+                              type="checkbox"
+                              className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <label
+                      htmlFor="onDelete"
+                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
+                    >
+                      {errors.onDelete}
                     </label>
                   </div>
                 </div>

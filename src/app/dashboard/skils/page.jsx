@@ -1,5 +1,9 @@
 import React from "react";
-
+import SkilTable from "./components/skilTable";
 export default function Skils() {
-  return <div>S</div>;
+  return (
+    <div>
+      <SkilTable />
+    </div>
+  );
 }
