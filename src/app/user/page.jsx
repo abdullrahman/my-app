@@ -6,12 +6,12 @@ export default async function User() {
   const prisma = new PrismaClient();
 
   const getData = async () => {
-    const data = await prisma.info.findUnique({
+    const data = await prisma.info.update({
+      data: {
+        password: "123456",
+      },
       where: {
         id: 1,
-      },
-      include: {
-        certificate: true,
       },
     });
     return data;
