@@ -7,7 +7,7 @@ import Processing from "../dashboard/common/modals/processing";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function ButtonUi(props) {
+export default function DeleteButton(props) {
   const rout = useRouter();
   const path = usePathname();
 

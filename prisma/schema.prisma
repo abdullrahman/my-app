@@ -79,21 +79,28 @@ model Experience {
 }
 
 model Project {
-  id                     Int         @id @default(autoincrement())
-  projectName            String
-  projectBeneficiary     String
-  projectType            ProjectType
-  projectDesc            String
-  projctSkils            String[]
-  projectMainSections    String[]
-  projectMainSectionDesc String[]
-  projectLink            String
-  projectImg             String
-  InfoId                 Int
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @updatedAt
-  onDelete               Boolean     @default(false)
-  info                   Info        @relation(fields: [InfoId], references: [id])
+  id                 Int              @id @default(autoincrement())
+  projectName        String?
+  projectBeneficiary String?
+  projectType        ProjectType
+  projectDesc        String?
+  projctSkils        String[]
+  projectLink        String?
+  projectImg         String?
+  InfoId             Int
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  onDelete           Boolean          @default(false)
+  info               Info             @relation(fields: [InfoId], references: [id])
+  ProjectSection     ProjectSection[]
+}
+
+model ProjectSection {
+  id                     Int     @id @default(autoincrement())
+  projectMainSections    String
+  projectMainSectionDesc String
+  projectId              Int
+  project                Project @relation(fields: [projectId], references: [id])
 }
 
 model SocialMedia {

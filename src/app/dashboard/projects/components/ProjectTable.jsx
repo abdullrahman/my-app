@@ -5,36 +5,27 @@ import Table from "../../common/tabel/Table";
 import DeleteButton from "../../../component/deleteButton";
 import { getColumns } from "../../common/tabel/getColumns";
 import { PencilIcon } from "@heroicons/react/20/solid";
-
-export default async function CertificateTable() {
+export default async function ProjectTable() {
   const prisma = new PrismaClient();
-  const getCertificate = async () => {
-    const certificate = await prisma.certificate.findMany({
+  const getSkils = async () => {
+    const skil = await prisma.skil.findMany({
       select: {
         id: true,
-        certiFrom: true,
-        certiMajor: true,
-        certiGPA: true,
-        certiGrade: true,
-        certiType: true,
-        certiUniv: true,
+        skilType: true,
+        skil: true,
         onDelete: true,
       },
     });
-    return certificate;
+    return skil;
   };
 
-  const certificate = await getCertificate();
-  const columns = getColumns(certificate);
+  const skil = await getSkils();
+  const columns = getColumns(skil);
   const buttons = [
     {
       key: "delete",
       content: (item) => (
-        <DeleteButton
-          item={item.id}
-          title="Certificate"
-          url="/dashboard/certificate/api"
-        />
+        <DeleteButton item={item.id} title="Skils" url="/dashboard/skils/api" />
       ),
     },
     {
@@ -42,7 +33,7 @@ export default async function CertificateTable() {
       content: (item) => (
         <Link
           className="text-indigo-600 hover:text-indigo-900"
-          href={`/dashboard/certificate/${item.id}`}
+          href={`/dashboard/skils/${item.id}`}
         >
           <PencilIcon className="h-5 w-5" aria-hidden="true" />
           <span className="sr-only"></span>
@@ -57,9 +48,9 @@ export default async function CertificateTable() {
     <div>
       <Table
         columns={columns}
-        data={certificate}
-        title={"Certificate"}
-        href="certificate/newCertificate"
+        data={skil}
+        title={"Skils"}
+        href="skils/newSkils"
       />
     </div>
   );

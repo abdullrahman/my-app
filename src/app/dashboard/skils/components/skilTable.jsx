@@ -2,7 +2,7 @@ import { React } from "react";
 import Link from "next/link";
 import { PrismaClient } from "@prisma/client";
 import Table from "../../common/tabel/Table";
-import ButtonUi from "../../../component/buttonUi";
+import DeleteButton from "../../../component/deleteButton";
 import { getColumns } from "../../common/tabel/getColumns";
 import { PencilIcon } from "@heroicons/react/20/solid";
 export default async function SkilTable() {
@@ -25,7 +25,7 @@ export default async function SkilTable() {
     {
       key: "delete",
       content: (item) => (
-        <ButtonUi item={item.id} title="Skils" url="/dashboard/skils/api" />
+        <DeleteButton item={item.id} title="Skils" url="/dashboard/skils/api" />
       ),
     },
     {

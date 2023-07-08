@@ -2,6 +2,7 @@ import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import { compare } from "bcrypt";
+import { use } from "react";
 
 const prisma = new PrismaClient();
 export const authOptions = {
@@ -44,17 +45,20 @@ export const authOptions = {
           id: user.id + "",
           email: user.email,
           name: user.name,
+          role: user.role,
         };
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  // secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     jwt: async ({ token, user }) => {
+      token = { ...user, ...token };
       return token;
     },
-    session: async ({ session, user, token }) => {
-      session = { id: token.sub, ...session.user };
+    session: async ({ session, token }) => {
+      session = { id: token.sub, role: token.role, ...session.user };
+
       return session;
     },
   },

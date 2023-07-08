@@ -3,7 +3,7 @@ import Link from "next/link";
 // import { useRouter, usePathname } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
 import Table from "../../common/tabel/Table";
-import ButtonUi from "../../../component/buttonUi";
+import DeleteButton from "../../../component/deleteButton";
 // import { XCircleIcon } from "@heroicons/react/20/solid";
 import { getColumns } from "../../common/tabel/getColumns";
 import { PencilIcon } from "@heroicons/react/20/solid";
@@ -69,7 +69,7 @@ export default async function InfoTable(props) {
     {
       key: "delete",
       content: (item) => (
-        <ButtonUi item={item.id} title="Info" url="/dashboard/info/api" />
+        <DeleteButton item={item.id} title="Info" url="/dashboard/info/api" />
       ),
     },
     //<ButtonUi item={item.id}

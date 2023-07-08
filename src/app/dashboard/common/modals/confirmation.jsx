@@ -6,7 +6,6 @@ export default function Confirmation(props) {
   const [open, setOpen] = useState(true);
 
   const cancelButtonRef = useRef(null);
-  console.log([props]);
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
