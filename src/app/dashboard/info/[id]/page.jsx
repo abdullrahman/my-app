@@ -11,5 +11,6 @@ export default async function page() {
     return res.json();
   };
   const info = await userData();
+  console.log(info);
   return <InfoForm data={info} />;
 }

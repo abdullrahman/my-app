@@ -1,5 +1,5 @@
 "use client";
-import { React } from "react";
+import { React, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
 import * as Yup from "yup";
@@ -9,13 +9,14 @@ import "react-toastify/dist/ReactToastify.css";
 import TsextField from "./textField";
 import IsDeleted from "./isDeleted";
 import SelectField from "./selectField";
+import CheckboxField from "./checkboxField";
 
-export default function ProjectForm(props) {
-  const { data: skilData } = props;
-  console.log(skilData);
+export default async function ProjectForm(props) {
+  const { projectData, skilData } = props;
   const session = useSession();
   const route = useRouter();
   const path = useParams();
+  console.log(session);
 
   const apiUrl = {
     setNew: "/dashboard/skils/newSkils/api",
@@ -30,16 +31,39 @@ export default function ProjectForm(props) {
     { value: "WindowsApplication", name: "WindowsApplication" },
     { value: "TestTeam", name: "TestTeam" },
   ];
+  const [skilOptions, setSkilOptions] = useState([]);
+  // skilData.map((sk) => {
+  //   skilOptions.push({ name: sk.skil, value: sk.skil });
+  // });
+  console.log(skilOptions);
   const validationSchema = Yup.object().shape({
-    projectName: Yup.string().required(),
-    projectBeneficiary: Yup.string().required(),
-    projectType: Yup.string().required(),
-    projectDesc: Yup.string().required(),
-    projctSkils: Yup.string().required(),
-    projectLink: Yup.string().required(),
-    projectImg: Yup.string().required(),
+    projectName: Yup.string().nullable(),
+    projectBeneficiary: Yup.string().nullable(),
+    projectType: Yup.string().nullable(),
+    projectDesc: Yup.string().nullable(),
+    projctSkils: Yup.array(),
+    projectLink: Yup.string().nullable(),
+    projectImg: Yup.string().nullable(),
     isDeleted: Yup.boolean(),
   });
+
+  // const getSkils = async () => {
+  //   const res = await fetch("http://localhost:3000/dashboard/projects/api");
+  //   return res.json();
+  // };
+  // const skilsData = await getSkils();
+  const handelChange = (e) => {
+    const checked = e.target.checked;
+    if (checked) skilOptions.push(e.target.value);
+    else {
+      setSkilOptions((current) => {
+        return current.filter((skil) => skil !== e.target.value);
+      });
+      console.log(skilOptions);
+      // skilOptions.pop();
+    }
+    console.log(skilOptions);
+  };
   const notifySuccess = (message) => {
     toast.success(message, { theme: "colored" });
   };
@@ -48,8 +72,9 @@ export default function ProjectForm(props) {
   };
 
   const handelSubmit = (values) => {
+    values.InfoId = session.data.id;
+    values.projctSkils = skilOptions;
     console.log(values);
-    // values.InfoId = session.data.id;
     // postdata(values);
   };
   const handleErrors = async (resp) => {
@@ -57,7 +82,7 @@ export default function ProjectForm(props) {
     throw new Error(resp.statusText);
   };
   const postdata = async (data) => {
-    const res = await fetch(skilData ? apiUrl.setUpdate : apiUrl.setNew, {
+    const res = await fetch(projectData ? apiUrl.setUpdate : apiUrl.setNew, {
       method: "POST",
       body: JSON.stringify({ data }),
     });
@@ -79,26 +104,26 @@ export default function ProjectForm(props) {
       <Formik
         validationSchema={validationSchema}
         initialValues={
-          !skilData
+          !projectData
             ? validationSchema.cast({
                 projectName: "",
                 projectBeneficiary: "",
                 projectType: "",
                 projectDesc: "",
-                projctSkils: "",
+                projctSkils: [],
                 projectLink: "",
                 projectImg: "",
                 isDeleted: false,
               })
             : {
-                projectName: skilData.skilsData.projectName,
-                projectBeneficiary: skilData.skilsData.projectBeneficiary,
-                projectType: skilData.skilsData.projectType,
-                projectDesc: skilData.skilsData.projectDesc,
-                projctSkils: skilData.skilsData.projectLink,
-                projectLink: skilData.skilsData.projectLink,
-                projectImg: skilData.skilsData.projectImg,
-                isDeleted: skilData.skilsData.onDelete,
+                projectName: projectData.skilsData.projectName,
+                projectBeneficiary: projectData.skilsData.projectBeneficiary,
+                projectType: projectData.skilsData.projectType,
+                projectDesc: projectData.skilsData.projectDesc,
+                projctSkils: projectData.skilsData.projectLink,
+                projectLink: projectData.skilsData.projectLink,
+                projectImg: projectData.skilsData.projectImg,
+                isDeleted: projectData.skilsData.onDelete,
               }
         }
         onSubmit={handelSubmit}
@@ -140,14 +165,27 @@ export default function ProjectForm(props) {
                   // onChange={(val) => setFieldValue("projectDesc", val)}
                 />
 
-                <TsextField
+                {/* <SelectField
                   id="projctSkils"
                   name="projctSkils"
                   label="Project Skils"
+                  options={skilOptions}
                   errors={errors.projctSkils}
                   // onChange={(val) => setFieldValue("projctSkils", val)}
-                />
-
+                /> */}
+                <h3 className="mb-5 text-lg font-medium text-gray-900 dark:text-white">
+                  Choose technology:
+                </h3>
+                <ul className="grid w-[60%] gap-4 md:grid-cols-4">
+                  {skilData.map((sk) => (
+                    <CheckboxField
+                      id={sk.id}
+                      value={sk.skil}
+                      onChange={handelChange}
+                      label={sk.skil}
+                    />
+                  ))}
+                </ul>
                 <TsextField
                   id="projectLink"
                   name="projectLink"
