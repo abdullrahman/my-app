@@ -7,25 +7,30 @@ import { getColumns } from "../../common/tabel/getColumns";
 import { PencilIcon } from "@heroicons/react/20/solid";
 export default async function ProjectTable() {
   const prisma = new PrismaClient();
-  const getSkils = async () => {
-    const skil = await prisma.skil.findMany({
+  const getProjects = async () => {
+    const project = await prisma.project.findMany({
       select: {
+        projectImg: true,
         id: true,
-        skilType: true,
-        skil: true,
-        onDelete: true,
+        projectName: true,
+        projectBeneficiary: true,
+        projectType: true,
       },
     });
-    return skil;
+    return project;
   };
 
-  const skil = await getSkils();
-  const columns = getColumns(skil);
+  const project = await getProjects();
+  const columns = getColumns(project);
   const buttons = [
     {
       key: "delete",
       content: (item) => (
-        <DeleteButton item={item.id} title="Skils" url="/dashboard/skils/api" />
+        <DeleteButton
+          item={item.id}
+          title="projects"
+          url="/dashboard/projects/api"
+        />
       ),
     },
     {
@@ -33,7 +38,7 @@ export default async function ProjectTable() {
       content: (item) => (
         <Link
           className="text-indigo-600 hover:text-indigo-900"
-          href={`/dashboard/skils/${item.id}`}
+          href={`/dashboard/projects/${item.id}`}
         >
           <PencilIcon className="h-5 w-5" aria-hidden="true" />
           <span className="sr-only"></span>
@@ -48,9 +53,9 @@ export default async function ProjectTable() {
     <div>
       <Table
         columns={columns}
-        data={skil}
-        title={"Skils"}
-        href="skils/newSkils"
+        data={project}
+        title={"Projects"}
+        href="projects/newProject"
       />
     </div>
   );

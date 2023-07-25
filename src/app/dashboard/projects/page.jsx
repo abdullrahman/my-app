@@ -1,5 +1,9 @@
 import React from "react";
-
+import ProjectTable from "./components/ProjectTable";
 export default function Projects() {
-  return <div>P</div>;
+  return (
+    <div>
+      <ProjectTable />
+    </div>
+  );
 }

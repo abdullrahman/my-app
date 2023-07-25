@@ -3,9 +3,12 @@ import { React } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
 import * as Yup from "yup";
-import { Form, Formik, Field } from "formik";
+import { Form, Formik } from "formik";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import TsextField from "./textField";
+import IsDeleted from "./isDeleted";
+import SelectField from "./selectField";
 
 export default function ProjectForm(props) {
   const { data: skilData } = props;
@@ -19,10 +22,23 @@ export default function ProjectForm(props) {
     setUpdate: `/dashboard/skils/${path.id}/api`,
   };
 
+  const projectTypesOptions = [
+    {
+      value: "Website",
+      name: "Website",
+    },
+    { value: "WindowsApplication", name: "WindowsApplication" },
+    { value: "TestTeam", name: "TestTeam" },
+  ];
   const validationSchema = Yup.object().shape({
-    skilType: Yup.string().required("Skil Type is Requred"),
-    skil: Yup.string().required("Skil is Requred"),
-    onDelete: Yup.boolean(),
+    projectName: Yup.string().required(),
+    projectBeneficiary: Yup.string().required(),
+    projectType: Yup.string().required(),
+    projectDesc: Yup.string().required(),
+    projctSkils: Yup.string().required(),
+    projectLink: Yup.string().required(),
+    projectImg: Yup.string().required(),
+    isDeleted: Yup.boolean(),
   });
   const notifySuccess = (message) => {
     toast.success(message, { theme: "colored" });
@@ -32,8 +48,9 @@ export default function ProjectForm(props) {
   };
 
   const handelSubmit = (values) => {
-    values.InfoId = session.data.id;
-    postdata(values);
+    console.log(values);
+    // values.InfoId = session.data.id;
+    // postdata(values);
   };
   const handleErrors = async (resp) => {
     notifyError(resp.statusText);
@@ -64,110 +81,93 @@ export default function ProjectForm(props) {
         initialValues={
           !skilData
             ? validationSchema.cast({
-                skilType: "",
-                skil: "",
-                onDelete: false,
+                projectName: "",
+                projectBeneficiary: "",
+                projectType: "",
+                projectDesc: "",
+                projctSkils: "",
+                projectLink: "",
+                projectImg: "",
+                isDeleted: false,
               })
             : {
-                skilType: skilData.skilsData.skilType,
-                skil: skilData.skilsData.skil,
-                onDelete: skilData.skilsData.onDelete,
+                projectName: skilData.skilsData.projectName,
+                projectBeneficiary: skilData.skilsData.projectBeneficiary,
+                projectType: skilData.skilsData.projectType,
+                projectDesc: skilData.skilsData.projectDesc,
+                projctSkils: skilData.skilsData.projectLink,
+                projectLink: skilData.skilsData.projectLink,
+                projectImg: skilData.skilsData.projectImg,
+                isDeleted: skilData.skilsData.onDelete,
               }
         }
         onSubmit={handelSubmit}
       >
-        {({ errors }) => (
+        {({ errors, setFieldValue, values }) => (
           <Form>
             <div className="space-y-12">
               <div className="border-b border-gray-900/10 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
-                  Skils Information
+                  Projects Information
                 </h2>
+                <TsextField
+                  // id="projectName"
+                  name="projectName"
+                  label="project Name"
+                  errors={errors.projectName}
+                  // onChange={(val) => setFieldValue("projectName", val)}
+                />
+                <TsextField
+                  id="projectBeneficiary"
+                  name="projectBeneficiary"
+                  label="project Beneficiary"
+                  errors={errors.projectBeneficiary}
+                  // onChange={(val) => setFieldValue("projectBeneficiary", val)}
+                />
+                <SelectField
+                  name="projectType"
+                  id="projectType"
+                  label="project Types"
+                  options={projectTypesOptions}
+                  errors={errors.projectType}
+                />
 
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="skilType"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Skil Type
-                    </label>
-                    <div className="mt-2">
-                      <Field
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="skilType"
-                        id="skilType"
-                        component="select"
-                      >
-                        <option value="Database">Database</option>
-                        <option value="Programming">Programming</option>
-                      </Field>
-                    </div>
-                    <label
-                      htmlFor="skilType"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.skilType}
-                    </label>
-                  </div>
-                </div>
+                <TsextField
+                  id="projectDesc"
+                  name="projectDesc"
+                  label="Project Description"
+                  errors={errors.projectDesc}
+                  // onChange={(val) => setFieldValue("projectDesc", val)}
+                />
 
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <label
-                      htmlFor="skil"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Skil
-                    </label>
-                    <div className="mt-2">
-                      <Field
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        name="skil"
-                        id="skil"
-                      />
-                    </div>
-                    <label
-                      htmlFor="skil"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.skil}
-                    </label>
-                  </div>
-                </div>
+                <TsextField
+                  id="projctSkils"
+                  name="projctSkils"
+                  label="Project Skils"
+                  errors={errors.projctSkils}
+                  // onChange={(val) => setFieldValue("projctSkils", val)}
+                />
 
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <fieldset>
-                      <legend className="text-base font-semibold leading-6 text-gray-900">
-                        on Delete
-                      </legend>
-                      <div className="mt-4 divide-y divide-gray-200 border-b border-t border-gray-200">
-                        <div className="relative flex items-start py-4">
-                          <div className="min-w-0 flex-1 text-sm leading-6">
-                            <label className="select-none font-medium text-gray-900">
-                              Deleted ?
-                            </label>
-                          </div>
-                          <div className="ml-3 flex h-6 items-center">
-                            <Field
-                              name="onDelete"
-                              type="checkbox"
-                              className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </fieldset>
-                    <label
-                      htmlFor="onDelete"
-                      className="ml-2 block text-sm font-medium leading-6 text-red-600"
-                    >
-                      {errors.onDelete}
-                    </label>
-                  </div>
-                </div>
+                <TsextField
+                  id="projectLink"
+                  name="projectLink"
+                  label="Project Link"
+                  errors={errors.projectLink}
+                  // onChange={(val) => setFieldValue("projectLink", val)}
+                />
 
+                <TsextField
+                  id="projectImg"
+                  name="projectImg"
+                  label="Project Img"
+                  errors={errors.projectImg}
+                  // onChange={(val) => setFieldValue("projectImg", val)}
+                />
+                <IsDeleted
+                  name="isDeleted"
+                  type="checkbox"
+                  errors={errors.isDeleted}
+                />
                 <div className="mt-6 flex items-center justify-end gap-x-6">
                   <button
                     type="button"
